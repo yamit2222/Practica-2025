@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cursos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <h1>Lista de Cursos</h1>
+    <p>Bienvenido, <span th:text="${usuario.username}"></span> | <a th:href="@{/logout}">Cerrar sesión</a></p>
+    <a th:href="@{/cursos/nuevo}">Nuevo Curso</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Instructor</th>
+                <th>Capacidad</th>
+                <th>Inscritos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="curso : ${cursos}">
+                <td><a th:href="@{'/cursos/' + ${curso.id}}" th:text="${curso.nombre}"></a></td>
+                <td th:text="${curso.instructor}"></td>
+                <td th:text="${curso.capacidad}"></td>
+                <td th:text="${#lists.size(curso.inscripciones)}"></td>
+                <td>
+                    <form th:action="@{'/cursos/' + ${curso.id} + '/inscribir'}" method="post" style="display:inline">
+                        <button type="submit" th:disabled="${#lists.contains(inscripciones, curso)}">Inscribirse</button>
+                    </form>
+                    <form th:action="@{'/cursos/' + ${curso.id} + '/remover'}" method="post" style="display:inline">
+                        <button type="submit" th:if="${#lists.contains(inscripciones, curso)}">Cancelar Inscripción</button>
+                    </form>
+                    <a th:href="@{'/cursos/' + ${curso.id} + '/editar'}">Editar</a>
+                    <form th:action="@{'/cursos/' + ${curso.id} + '/eliminar'}" method="post" style="display:inline" 
+                        onsubmit="return confirm('¿Eliminar este curso?');">
+                        <button type="submit">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

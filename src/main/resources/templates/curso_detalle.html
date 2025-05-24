@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detalle Curso</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <h2 th:text="${curso.nombre}">Nombre del curso</h2>
+    <p>Instructor: <span th:text="${curso.instructor}"></span></p>
+    <p>Capacidad: <span th:text="${curso.capacidad}"></span></p>
+    <p>Inscritos: <span th:text="${#lists.size(inscripciones)}"></span></p>
+
+    <h3>Usuarios inscritos:</h3>
+    <ul>
+        <li th:each="insc : ${inscripciones}" th:text="${insc.usuario.username} + ' (' + #dates.format(insc.fechaInscripcion, 'dd/MM/yyyy HH:mm') + ')'"></li>
+    </ul>
+
+    <a th:href="@{/cursos}">Volver a cursos</a>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Formulario Curso</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <h2 th:text="${curso.id == null} ? 'Nuevo Curso' : 'Editar Curso'"></h2>
+    <form th:action="${curso.id == null} ? @{/cursos/nuevo} : @{/cursos/{id}/editar(id=${curso.id})}" 
+          th:object="${curso}" method="post" id="cursoForm">
+
+        <label>Nombre:
+            <input type="text" th:field="*{nombre}" required>
+        </label>
+        <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+
+        <label>Instructor:
+            <input type="text" th:field="*{instructor}" required>
+        </label>
+        <div th:if="${#fields.hasErrors('instructor')}" th:errors="*{instructor}"></div>
+
+        <label>Capacidad:
+            <input type="number" th:field="*{capacidad}" min="1" required>
+        </label>
+        <div th:if="${#fields.hasErrors('capacidad')}" th:errors="*{capacidad}"></div>
+
+        <button type="submit">Guardar</button>
+    </form>
+
+    <a th:href="@{/cursos}">Volver a cursos</a>
+
+    <script>
+        document.getElementById('cursoForm').addEventListener('submit', e => {
+            const nombre = e.target.nombre.value.trim();
+            const instructor = e.target.instructor.value.trim();
+            const capacidad = e.target.capacidad.value;
+            if (!nombre || !instructor || capacidad < 1) {
+                alert('Todos los campos son obligatorios y capacidad debe ser mayor que 0');
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
