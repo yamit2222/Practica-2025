@@ -1,44 +1,209 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <title>Cursos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursos Disponibles - Sistema de Cursos</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <h1>Lista de Cursos</h1>
-    <p>Bienvenido, <span th:text="${usuario.username}"></span> | <a th:href="@{/logout}">Cerrar sesión</a></p>
-    <a th:href="@{/cursos/nuevo}">Nuevo Curso</a>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Instructor</th>
-                <th>Capacidad</th>
-                <th>Inscritos</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="curso : ${cursos}">
-                <td><a th:href="@{'/cursos/' + ${curso.id}}" th:text="${curso.nombre}"></a></td>
-                <td th:text="${curso.instructor}"></td>
-                <td th:text="${curso.capacidad}"></td>
-                <td th:text="${#lists.size(curso.inscripciones)}"></td>
-                <td>
-                    <form th:action="@{'/cursos/' + ${curso.id} + '/inscribir'}" method="post" style="display:inline">
-                        <button type="submit" th:disabled="${#lists.contains(inscripciones, curso)}">Inscribirse</button>
-                    </form>
-                    <form th:action="@{'/cursos/' + ${curso.id} + '/remover'}" method="post" style="display:inline">
-                        <button type="submit" th:if="${#lists.contains(inscripciones, curso)}">Cancelar Inscripción</button>
-                    </form>
-                    <a th:href="@{'/cursos/' + ${curso.id} + '/editar'}">Editar</a>
-                    <form th:action="@{'/cursos/' + ${curso.id} + '/eliminar'}" method="post" style="display:inline" 
-                        onsubmit="return confirm('¿Eliminar este curso?');">
-                        <button type="submit">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Gestión de Cursos</h1>            <div class="user-info">                <span>👤 Bienvenido, <strong th:text="${usuario.username}"></strong></span>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" style="background: none; border: none; color: var(--white); 
+                            text-decoration: underline; cursor: pointer; font-size: inherit; padding: 8px 16px; 
+                            border: 1px solid rgba(255, 255, 255, 0.3); border-radius: var(--border-radius); 
+                            transition: var(--transition);" 
+                            onmouseover="this.style.background='rgba(255, 255, 255, 0.1)'" 
+                            onmouseout="this.style.background='none'">
+                        🚪 Cerrar sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="nav-links">
+            <a th:href="@{/cursos/nuevo}" class="btn btn-primary">
+                ➕ Nuevo Curso
+            </a>
+            <span style="color: var(--gray-dark);">
+                📊 Total de cursos: <strong th:text="${#lists.size(cursos)}"></strong>
+            </span>
+        </div>
+        
+        <div class="content">
+            <!-- Vista de tarjetas para móvil y tablet -->
+            <div class="course-cards" style="display: none;">
+                <div th:each="curso : ${cursos}" class="course-card">
+                    <div class="course-title">
+                        <a th:href="@{'/cursos/' + ${curso.id}}" th:text="${curso.nombre}"></a>
+                    </div>
+                    
+                    <div class="course-info">
+                        <div class="course-stat">
+                            <div class="course-stat-value">👨‍🏫</div>
+                            <div class="course-stat-label" th:text="${curso.instructor}"></div>
+                        </div>
+                        <div class="course-stat">
+                            <div class="course-stat-value" th:text="${curso.capacidad}"></div>
+                            <div class="course-stat-label">Capacidad</div>
+                        </div>
+                        <div class="course-stat">
+                            <div class="course-stat-value" th:text="${#lists.size(curso.inscripciones)}"></div>
+                            <div class="course-stat-label">Inscritos</div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-actions" style="justify-content: center; margin-top: 15px;">
+                        <form th:action="@{'/cursos/' + ${curso.id} + '/inscribir'}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-success btn-small" 
+                                    th:disabled="${#lists.contains(inscripciones, curso)}">
+                                ✅ Inscribirse
+                            </button>
+                        </form>
+                        <form th:action="@{'/cursos/' + ${curso.id} + '/remover'}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-warning btn-small" 
+                                    th:if="${#lists.contains(inscripciones, curso)}">
+                                ❌ Cancelar
+                            </button>
+                        </form>
+                        <a th:href="@{'/cursos/' + ${curso.id} + '/editar'}" class="btn btn-primary btn-small">
+                            ✏️ Editar
+                        </a>
+                        <form th:action="@{'/cursos/' + ${curso.id} + '/eliminar'}" method="post" style="display:inline" 
+                            onsubmit="return confirm('¿Estás seguro de que quieres eliminar este curso?');">
+                            <button type="submit" class="btn btn-danger btn-small">
+                                🗑️ Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vista de tabla para escritorio -->
+            <div class="table-container desktop-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>📚 Nombre del Curso</th>
+                            <th>👨‍🏫 Instructor</th>
+                            <th>👥 Capacidad</th>
+                            <th>✅ Inscritos</th>
+                            <th>🔧 Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="curso : ${cursos}">
+                            <td>
+                                <strong>
+                                    <a th:href="@{'/cursos/' + ${curso.id}}" th:text="${curso.nombre}"></a>
+                                </strong>
+                            </td>
+                            <td th:text="${curso.instructor}"></td>
+                            <td>
+                                <span class="tooltip" th:attr="data-tooltip='Capacidad máxima del curso'">
+                                    <strong th:text="${curso.capacidad}"></strong> personas
+                                </span>
+                            </td>
+                            <td>
+                                <span th:text="${#lists.size(curso.inscripciones)}"></span> / 
+                                <span th:text="${curso.capacidad}"></span>
+                                <div style="width: 100%; background: var(--gray-light); border-radius: 10px; height: 8px; margin-top: 5px;">
+                                    <div style="width: calc(100% * ${#lists.size(curso.inscripciones)} / ${curso.capacidad}); 
+                                                background: var(--secondary-color); height: 100%; border-radius: 10px;"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-actions">
+                                    <form th:action="@{'/cursos/' + ${curso.id} + '/inscribir'}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-success btn-small" 
+                                                th:disabled="${#lists.contains(inscripciones, curso)}"
+                                                th:title="${#lists.contains(inscripciones, curso)} ? 'Ya estás inscrito' : 'Inscribirse al curso'">
+                                            <span th:if="${#lists.contains(inscripciones, curso)}">✅ Inscrito</span>
+                                            <span th:unless="${#lists.contains(inscripciones, curso)}">➕ Inscribirse</span>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{'/cursos/' + ${curso.id} + '/remover'}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-warning btn-small" 
+                                                th:if="${#lists.contains(inscripciones, curso)}"
+                                                title="Cancelar inscripción">
+                                            ❌ Cancelar
+                                        </button>
+                                    </form>
+                                    <a th:href="@{'/cursos/' + ${curso.id} + '/editar'}" class="btn btn-primary btn-small"
+                                       title="Editar curso">
+                                        ✏️ Editar
+                                    </a>
+                                    <form th:action="@{'/cursos/' + ${curso.id} + '/eliminar'}" method="post" style="display:inline" 
+                                        onsubmit="return confirm('¿Estás seguro de que quieres eliminar este curso? Esta acción no se puede deshacer.');">
+                                        <button type="submit" class="btn btn-danger btn-small" title="Eliminar curso">
+                                            🗑️ Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Mensaje cuando no hay cursos -->
+            <div th:if="${#lists.isEmpty(cursos)}" style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">📚</div>
+                <h3 style="color: var(--gray-dark); margin-bottom: 10px;">No hay cursos disponibles</h3>
+                <p style="color: var(--gray-dark); margin-bottom: 30px;">¡Sé el primero en crear un curso!</p>
+                <a th:href="@{/cursos/nuevo}" class="btn btn-primary">
+                    ➕ Crear Primer Curso
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Responsive behavior para cambiar entre vista de tabla y tarjetas
+        function checkViewport() {
+            const tableContainer = document.querySelector('.desktop-table');
+            const cardsContainer = document.querySelector('.course-cards');
+            
+            if (window.innerWidth <= 768) {
+                tableContainer.style.display = 'none';
+                cardsContainer.style.display = 'block';
+            } else {
+                tableContainer.style.display = 'block';
+                cardsContainer.style.display = 'none';
+            }
+        }
+        
+        // Ejecutar al cargar y al redimensionar
+        checkViewport();
+        window.addEventListener('resize', checkViewport);
+        
+        // Confirmación mejorada para eliminación
+        document.querySelectorAll('form[action*="/eliminar"]').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const courseName = this.closest('tr')?.querySelector('td a')?.textContent || 
+                                  this.closest('.course-card')?.querySelector('.course-title a')?.textContent;
+                
+                if (confirm(`🗑️ ¿Estás seguro de que quieres eliminar el curso "${courseName}"?\n\nEsta acción no se puede deshacer y se eliminarán todas las inscripciones.`)) {
+                    this.submit();
+                }
+            });
+        });
+        
+        // Animación para botones de inscripción
+        document.querySelectorAll('button[type="submit"]').forEach(button => {
+            button.addEventListener('click', function() {
+                if (!this.disabled) {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

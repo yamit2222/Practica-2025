@@ -1,20 +1,191 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <title>Detalle Curso</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Detalle: ' + ${curso.nombre} + ' - Sistema de Cursos'"></title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <h2 th:text="${curso.nombre}">Nombre del curso</h2>
-    <p>Instructor: <span th:text="${curso.instructor}"></span></p>
-    <p>Capacidad: <span th:text="${curso.capacidad}"></span></p>
-    <p>Inscritos: <span th:text="${#lists.size(inscripciones)}"></span></p>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Detalle del Curso</h1>
+            <div class="user-info">
+                <a th:href="@{/cursos}">← Volver a Cursos</a>
+                <a th:href="@{'/cursos/' + ${curso.id} + '/editar'}" class="btn btn-primary btn-small">
+                    ✏️ Editar
+                </a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Información principal del curso -->
+            <div class="course-card" style="margin-bottom: 30px;">
+                <div class="course-title" style="font-size: 2rem; text-align: center; margin-bottom: 20px;">
+                    <span th:text="${curso.nombre}"></span>
+                </div>
+                
+                <div class="course-info">
+                    <div class="course-stat">
+                        <div class="course-stat-value">👨‍🏫</div>
+                        <div class="course-stat-label">Instructor</div>
+                        <div style="font-weight: 600; margin-top: 5px;" th:text="${curso.instructor}"></div>
+                    </div>
+                    <div class="course-stat">
+                        <div class="course-stat-value" th:text="${curso.capacidad}"></div>
+                        <div class="course-stat-label">Capacidad Total</div>
+                    </div>
+                    <div class="course-stat">
+                        <div class="course-stat-value" th:text="${#lists.size(inscripciones)}"></div>
+                        <div class="course-stat-label">Estudiantes Inscritos</div>
+                    </div>
+                    <div class="course-stat">
+                        <div class="course-stat-value" th:text="${curso.capacidad - #lists.size(inscripciones)}"></div>
+                        <div class="course-stat-label">Lugares Disponibles</div>
+                    </div>
+                </div>
+                
+                <!-- Barra de progreso de ocupación -->
+                <div style="margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-weight: 600;">Ocupación del Curso</span>
+                        <span th:text="${#numbers.formatPercent((#lists.size(inscripciones) * 1.0) / curso.capacidad, 0, 0)}"></span>
+                    </div>
+                    <div style="width: 100%; background: var(--gray-light); border-radius: 15px; height: 20px; overflow: hidden;">
+                        <div th:style="'width: ' + (${#lists.size(inscripciones)} * 100.0 / ${curso.capacidad}) + '%; 
+                                       background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); 
+                                       height: 100%; border-radius: 15px; transition: width 0.8s ease;'"></div>
+                    </div>
+                </div>
+            </div>
 
-    <h3>Usuarios inscritos:</h3>
-    <ul>
-        <li th:each="insc : ${inscripciones}" th:text="${insc.usuario.username} + ' (' + #dates.format(insc.fechaInscripcion, 'dd/MM/yyyy HH:mm') + ')'"></li>
-    </ul>
+            <!-- Lista de estudiantes inscritos -->
+            <div class="table-container">
+                <div style="padding: 20px; background: var(--light-color); border-bottom: 1px solid var(--gray-light);">
+                    <h3 style="margin: 0; color: var(--dark-color); display: flex; align-items: center; gap: 10px;">
+                        👥 Estudiantes Inscritos 
+                        <span style="background: var(--primary-color); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;" 
+                              th:text="${#lists.size(inscripciones)}"></span>
+                    </h3>
+                </div>
+                
+                <div th:if="${#lists.isEmpty(inscripciones)}" style="padding: 40px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">📝</div>
+                    <h4 style="color: var(--gray-dark); margin-bottom: 10px;">No hay estudiantes inscritos</h4>
+                    <p style="color: var(--gray-dark);">Este curso aún no tiene inscripciones.</p>
+                </div>
+                
+                <div th:unless="${#lists.isEmpty(inscripciones)}">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>👤 Estudiante</th>
+                                <th>📅 Fecha de Inscripción</th>
+                                <th>🕐 Hora</th>
+                                <th>📧 Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="insc, iterStat : ${inscripciones}" 
+                                th:class="${iterStat.odd} ? 'odd-row' : 'even-row'">
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 40px; height: 40px; background: var(--primary-color); 
+                                                    border-radius: 50%; display: flex; align-items: center; 
+                                                    justify-content: center; color: white; font-weight: 600;">
+                                            <span th:text="${#strings.substring(insc.usuario.username, 0, 1).toUpperCase()}"></span>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600;" th:text="${insc.usuario.username}"></div>
+                                            <div style="font-size: 0.8rem; color: var(--gray-dark);" 
+                                                 th:text="${insc.usuario.email}"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 600;" 
+                                          th:text="${#dates.format(insc.fechaInscripcion, 'dd/MM/yyyy')}"></span>
+                                </td>
+                                <td>
+                                    <span th:text="${#dates.format(insc.fechaInscripcion, 'HH:mm')}"></span>
+                                </td>
+                                <td>
+                                    <span style="background: var(--secondary-color); color: white; 
+                                                 padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: 600;">
+                                        ✅ Activo
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Acciones rápidas -->
+            <div style="margin-top: 30px; text-align: center;">
+                <div class="table-actions" style="justify-content: center;">
+                    <a th:href="@{'/cursos/' + ${curso.id} + '/editar'}" class="btn btn-primary">
+                        ✏️ Editar Curso
+                    </a>
+                    <a th:href="@{/cursos}" class="btn btn-secondary" 
+                       style="background: var(--gray-light); color: var(--dark-color); text-decoration: none;">
+                        📚 Ver Todos los Cursos
+                    </a>
+                    <form th:action="@{'/cursos/' + ${curso.id} + '/eliminar'}" method="post" style="display:inline" 
+                          onsubmit="return confirm('¿Estás seguro de que quieres eliminar este curso? Esta acción eliminará todas las inscripciones.');">
+                        <button type="submit" class="btn btn-danger">
+                            🗑️ Eliminar Curso
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a th:href="@{/cursos}">Volver a cursos</a>
+    <script>
+        // Animación para las filas de la tabla
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+        
+        // Confirmación mejorada para eliminar
+        document.querySelector('form[action*="/eliminar"]')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const courseName = document.querySelector('.course-title').textContent.trim();
+            const enrolledCount = document.querySelectorAll('tbody tr').length;
+            
+            let message = `🗑️ ¿Estás seguro de que quieres eliminar el curso "${courseName}"?`;
+            if (enrolledCount > 0) {
+                message += `\n\n⚠️ Esto eliminará también las ${enrolledCount} inscripciones existentes.`;
+            }
+            message += '\n\nEsta acción no se puede deshacer.';
+            
+            if (confirm(message)) {
+                this.submit();
+            }
+        });
+        
+        // Efecto hover para las filas de estudiantes
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+                this.style.backgroundColor = '#f8f9fa';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.backgroundColor = '';
+            });
+        });
+    </script>
 </body>
 </html>

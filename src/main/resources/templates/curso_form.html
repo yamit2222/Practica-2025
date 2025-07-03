@@ -1,44 +1,164 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <title>Formulario Curso</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${curso.id == null} ? 'Nuevo Curso - Sistema de Cursos' : 'Editar Curso - Sistema de Cursos'"></title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <h2 th:text="${curso.id == null} ? 'Nuevo Curso' : 'Editar Curso'"></h2>
-    <form th:action="${curso.id == null} ? @{/cursos/nuevo} : @{/cursos/{id}/editar(id=${curso.id})}" 
-          th:object="${curso}" method="post" id="cursoForm">
+    <div class="container">
+        <div class="header">
+            <h1 th:text="${curso.id == null} ? '➕ Crear Nuevo Curso' : '✏️ Editar Curso'"></h1>
+            <div class="user-info">
+                <a th:href="@{/cursos}" class="btn-back">← Volver a Cursos</a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="form-container">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">
+                        <span th:text="${curso.id == null} ? '📚' : '✏️'"></span>
+                    </div>
+                    <h2 th:text="${curso.id == null} ? 'Información del Nuevo Curso' : 'Modificar Información del Curso'" 
+                        style="color: var(--primary-color); margin: 0;"></h2>
+                </div>
+                
+                <form th:action="${curso.id == null} ? @{/cursos/nuevo} : @{/cursos/{id}/editar(id=${curso.id})}" 
+                      th:object="${curso}" method="post" id="cursoForm">
 
-        <label>Nombre:
-            <input type="text" th:field="*{nombre}" required>
-        </label>
-        <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                    <div class="form-group">
+                        <label for="nombre">📚 Nombre del Curso:</label>
+                        <input type="text" id="nombre" th:field="*{nombre}" required 
+                               placeholder="Ej: Introducción a Spring Boot"
+                               minlength="3" maxlength="100">
+                        <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" 
+                             class="error-message"></div>
+                    </div>
 
-        <label>Instructor:
-            <input type="text" th:field="*{instructor}" required>
-        </label>
-        <div th:if="${#fields.hasErrors('instructor')}" th:errors="*{instructor}"></div>
+                    <div class="form-group">
+                        <label for="instructor">👨‍🏫 Instructor:</label>
+                        <input type="text" id="instructor" th:field="*{instructor}" required 
+                               placeholder="Nombre del instructor del curso"
+                               minlength="2" maxlength="50">
+                        <div th:if="${#fields.hasErrors('instructor')}" th:errors="*{instructor}" 
+                             class="error-message"></div>
+                    </div>
 
-        <label>Capacidad:
-            <input type="number" th:field="*{capacidad}" min="1" required>
-        </label>
-        <div th:if="${#fields.hasErrors('capacidad')}" th:errors="*{capacidad}"></div>
+                    <div class="form-group">
+                        <label for="capacidad">👥 Capacidad Máxima:</label>
+                        <input type="number" id="capacidad" th:field="*{capacidad}" 
+                               min="1" max="1000" required 
+                               placeholder="Número máximo de estudiantes">
+                        <div th:if="${#fields.hasErrors('capacidad')}" th:errors="*{capacidad}" 
+                             class="error-message"></div>
+                        <div id="capacidad-info" style="font-size: 0.85rem; margin-top: 5px; color: var(--gray-dark);">
+                            💡 Capacidad recomendada: 20-50 estudiantes
+                        </div>
+                    </div>
 
-        <button type="submit">Guardar</button>
-    </form>
-
-    <a th:href="@{/cursos}">Volver a cursos</a>
+                    <div class="form-group" style="text-align: center; margin-top: 40px;">
+                        <button type="submit" class="btn btn-primary" style="margin-right: 15px;">
+                            <span th:text="${curso.id == null} ? '🚀 Crear Curso' : '💾 Guardar Cambios'"></span>
+                        </button>
+                        <a th:href="@{/cursos}" class="btn btn-secondary" 
+                           style="background: var(--gray-light); color: var(--dark-color); text-decoration: none;">
+                            ❌ Cancelar
+                        </a>
+                    </div>
+                </form>
+                
+                <!-- Información adicional para edición -->
+                <div th:if="${curso.id != null}" style="margin-top: 30px; padding: 20px; background: var(--light-color); border-radius: var(--border-radius);">
+                    <h4 style="margin-bottom: 15px; color: var(--dark-color);">📊 Estadísticas del Curso</h4>
+                    <div class="course-info">
+                        <div class="course-stat">
+                            <div class="course-stat-value" th:text="${#lists.size(curso.inscripciones)}"></div>
+                            <div class="course-stat-label">Estudiantes Inscritos</div>
+                        </div>
+                        <div class="course-stat">
+                            <div class="course-stat-value" th:text="${curso.capacidad - #lists.size(curso.inscripciones)}"></div>
+                            <div class="course-stat-label">Lugares Disponibles</div>
+                        </div>
+                        <div class="course-stat">
+                            <div class="course-stat-value" th:text="${#numbers.formatPercent((#lists.size(curso.inscripciones) * 1.0) / curso.capacidad, 0, 0)}"></div>
+                            <div class="course-stat-label">Ocupación</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        // Validaciones mejoradas del formulario
         document.getElementById('cursoForm').addEventListener('submit', e => {
             const nombre = e.target.nombre.value.trim();
             const instructor = e.target.instructor.value.trim();
-            const capacidad = e.target.capacidad.value;
-            if (!nombre || !instructor || capacidad < 1) {
-                alert('Todos los campos son obligatorios y capacidad debe ser mayor que 0');
+            const capacidad = parseInt(e.target.capacidad.value);
+            
+            let errors = [];
+            
+            if (!nombre || nombre.length < 3) {
+                errors.push('❌ El nombre del curso debe tener al menos 3 caracteres');
+            }
+            
+            if (!instructor || instructor.length < 2) {
+                errors.push('❌ El nombre del instructor debe tener al menos 2 caracteres');
+            }
+            
+            if (!capacidad || capacidad < 1 || capacidad > 1000) {
+                errors.push('❌ La capacidad debe ser entre 1 y 1000 estudiantes');
+            }
+            
+            if (errors.length > 0) {
+                alert(errors.join('\n'));
                 e.preventDefault();
+                return;
+            }
+            
+            // Mostrar efecto de carga
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const isEditing = submitBtn.textContent.includes('Guardar');
+            submitBtn.innerHTML = `<span class="loading"></span> ${isEditing ? 'Guardando...' : 'Creando...'}`;
+            submitBtn.disabled = true;
+        });
+        
+        // Validación en tiempo real de capacidad
+        document.getElementById('capacidad').addEventListener('input', function() {
+            const value = parseInt(this.value);
+            const info = document.getElementById('capacidad-info');
+            
+            if (value < 10) {
+                info.innerHTML = '⚠️ Capacidad muy baja - Considera al menos 10 estudiantes';
+                info.style.color = 'var(--warning-color)';
+            } else if (value > 100) {
+                info.innerHTML = '⚠️ Capacidad muy alta - Considera menos de 100 estudiantes';
+                info.style.color = 'var(--warning-color)';
+            } else if (value >= 20 && value <= 50) {
+                info.innerHTML = '✅ Capacidad ideal para un buen ambiente de aprendizaje';
+                info.style.color = 'var(--secondary-color)';
+            } else {
+                info.innerHTML = '💡 Capacidad aceptable para el curso';
+                info.style.color = 'var(--gray-dark)';
             }
         });
+        
+        // Validación de caracteres en tiempo real para nombre
+        document.getElementById('nombre').addEventListener('input', function() {
+            const value = this.value.trim();
+            this.style.borderColor = value.length >= 3 ? 'var(--secondary-color)' : 'var(--danger-color)';
+        });
+        
+        // Validación de caracteres en tiempo real para instructor
+        document.getElementById('instructor').addEventListener('input', function() {
+            const value = this.value.trim();
+            this.style.borderColor = value.length >= 2 ? 'var(--secondary-color)' : 'var(--danger-color)';
+        });
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>

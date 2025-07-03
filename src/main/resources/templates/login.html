@@ -1,18 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Sistema de Cursos</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <h2>Iniciar Sesión</h2>
-    <form th:action="@{/login}" method="post" id="loginForm">
-        <label>Usuario: <input type="text" name="username" required></label><br>
-        <label>Contraseña: <input type="password" name="password" required></label><br>
-        <button type="submit">Ingresar</button>
-    </form>
-    <p>¿No tienes cuenta? <a th:href="@{/registro}">Regístrate aquí</a></p>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Sistema de Gestión de Cursos</h1>
+        </div>
+        
+        <div class="content">
+            <div class="form-container">                <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary-color);">
+                    🔐 Iniciar Sesión
+                </h2>
+                
+                <!-- Mensaje de logout exitoso -->
+                <div th:if="${param.logout}" style="background: var(--secondary-color); color: white; padding: 15px; 
+                     border-radius: var(--border-radius); margin-bottom: 20px; text-align: center; animation: fadeIn 0.5s ease;">
+                    ✅ Has cerrado sesión exitosamente
+                </div>
+                
+                <!-- Mensaje de error -->
+                <div th:if="${param.error}" style="background: var(--danger-color); color: white; padding: 15px; 
+                     border-radius: var(--border-radius); margin-bottom: 20px; text-align: center; animation: fadeIn 0.5s ease;">
+                    ❌ Usuario o contraseña incorrectos
+                </div>
+                
+                <form th:action="@{/login}" method="post" id="loginForm">
+                    <div class="form-group">
+                        <label for="username">👤 Usuario:</label>
+                        <input type="text" id="username" name="username" required 
+                               placeholder="Ingresa tu nombre de usuario">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">🔒 Contraseña:</label>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="Ingresa tu contraseña">
+                    </div>
+                    
+                    <div class="form-group" style="text-align: center;">
+                        <button type="submit" class="btn btn-primary">
+                             Ingresar
+                        </button>
+                    </div>
+                </form>
+                
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray-light);">
+                    <p>¿No tienes cuenta? 
+                        <a th:href="@{/registro}" style="font-weight: 600;">
+                             Regístrate aquí
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Validaciones JS para login
+        // Validaciones JS para login mejoradas
         document

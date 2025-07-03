@@ -1,34 +1,115 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <title>Registro</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Sistema de Cursos</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <h2>Registro de Usuario</h2>
-    <form th:action="@{/registro}" th:object="${usuario}" method="post" id="registroForm">
-        <label>Usuario: <input type="text" th:field="*{username}" required></label>
-        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Sistema de Gestión de Cursos</h1>
+        </div>
+        
+        <div class="content">
+            <div class="form-container">
+                <h2 style="text-align: center; margin-bottom: 30px; color: var(--secondary-color);">
+                     Registro de Usuario
+                </h2>
+                
+                <form th:action="@{/registro}" th:object="${usuario}" method="post" id="registroForm">
+                    <div class="form-group">
+                        <label for="username">👤 Nombre de Usuario:</label>
+                        <input type="text" id="username" th:field="*{username}" required 
+                               placeholder="Elige un nombre de usuario único">
+                        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" 
+                             class="error-message"></div>
+                    </div>
 
-        <label>Email: <input type="email" th:field="*{email}" required></label>
-        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    <div class="form-group">
+                        <label for="email">📧 Correo Electrónico:</label>
+                        <input type="email" id="email" th:field="*{email}" required 
+                               placeholder="tu@email.com">
+                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" 
+                             class="error-message"></div>
+                    </div>
 
-        <label>Contraseña: <input type="password" th:field="*{password}" required></label>
-        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    <div class="form-group">
+                        <label for="password">🔒 Contraseña:</label>
+                        <input type="password" id="password" th:field="*{password}" required 
+                               placeholder="Crea una contraseña segura" minlength="6">
+                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" 
+                             class="error-message"></div>
+                    </div>
 
-        <button type="submit">Registrar</button>
-    </form>
-    <p>¿Ya tienes cuenta? <a th:href="@{/login}">Inicia sesión aquí</a></p>
+                    <div class="form-group" style="text-align: center;">
+                        <button type="submit" class="btn btn-success">
+                             Registrarse
+                        </button>
+                    </div>
+                </form>
+                
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray-light);">
+                    <p>¿Ya tienes cuenta? 
+                        <a th:href="@{/login}" style="font-weight: 600;">
+                            🔐 Inicia sesión aquí
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        // Validaciones mejoradas para registro
         document.getElementById('registroForm').addEventListener('submit', e => {
             const u = e.target.username.value.trim();
             const p = e.target.password.value.trim();
             const email = e.target.email.value.trim();
+            
             if (!u || !p || !email) {
-                alert('Todos los campos son obligatorios');
+                alert('❌ Todos los campos son obligatorios');
                 e.preventDefault();
+                return;
             }
+            
+            if (p.length < 6) {
+                alert('❌ La contraseña debe tener al menos 6 caracteres');
+                e.preventDefault();
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                alert('❌ Ingresa un email válido');
+                e.preventDefault();
+                return;
+            }
+            
+            // Mostrar efecto de carga
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<span class="loading"></span> Registrando...';
+            submitBtn.disabled = true;
+        });
+        
+        // Validación en tiempo real
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strength = password.length >= 8 ? 'Fuerte' : 
+                           password.length >= 6 ? 'Medio' : 'Débil';
+            const color = password.length >= 8 ? 'var(--secondary-color)' : 
+                         password.length >= 6 ? 'var(--warning-color)' : 'var(--danger-color)';
+            
+            let strengthIndicator = document.getElementById('password-strength');
+            if (!strengthIndicator) {
+                strengthIndicator = document.createElement('div');
+                strengthIndicator.id = 'password-strength';
+                strengthIndicator.style.fontSize = '0.8rem';
+                strengthIndicator.style.marginTop = '5px';
+                this.parentNode.appendChild(strengthIndicator);
+            }
+            
+            strengthIndicator.innerHTML = `Seguridad: <span style="color: ${color}; font-weight: 600;">${strength}</span>`;
         });
     </script>
 </body>

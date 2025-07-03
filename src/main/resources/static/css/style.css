@@ -1,0 +1,479 @@
+/* =======================================
+   Sistema de Gestión de Cursos - CSS Moderno
+   ======================================= */
+
+/* Variables CSS para colores consistentes */
+:root {
+    --primary-color: #4A90E2;
+    --secondary-color: #50C878;
+    --accent-color: #FF6B35;
+    --danger-color: #E74C3C;
+    --warning-color: #F39C12;
+    --dark-color: #2C3E50;
+    --light-color: #ECF0F1;
+    --white: #FFFFFF;
+    --gray-light: #BDC3C7;
+    --gray-dark: #7F8C8D;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+    --transition: all 0.3s ease;
+}
+
+/* Reset y configuración base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    line-height: 1.6;
+    color: var(--dark-color);
+    padding: 20px;
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header y navegación */
+.header {
+    background: linear-gradient(135deg, var(--primary-color), #357ABD);
+    color: var(--white);
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.header h1, .header h2 {
+    font-size: 2rem;
+    font-weight: 300;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.9rem;
+}
+
+.user-info a {
+    color: var(--white);
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.user-info a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--white);
+}
+
+/* Contenido principal */
+.content {
+    padding: 30px;
+}
+
+/* Formularios modernos */
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 40px;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--dark-color);
+    font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    background: var(--white);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Botones modernos */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    min-width: 120px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #357ABD);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #357ABD, var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--secondary-color), #45B26B);
+    color: var(--white);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #45B26B, var(--secondary-color));
+    transform: translateY(-2px);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning-color), #E67E22);
+    color: var(--white);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #E67E22, var(--warning-color));
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger-color), #C0392B);
+    color: var(--white);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #C0392B, var(--danger-color));
+    transform: translateY(-2px);
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    min-width: 80px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Tabla moderna */
+.table-container {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin: 20px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+thead {
+    background: linear-gradient(135deg, var(--dark-color), #34495E);
+    color: var(--white);
+}
+
+th {
+    padding: 18px 15px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid var(--light-color);
+    transition: var(--transition);
+}
+
+tbody tr:hover {
+    background: #F8F9FA;
+    transform: scale(1.01);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Acciones de tabla */
+.table-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.table-actions .btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    min-width: 70px;
+}
+
+/* Enlaces estilizados */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+/* Mensajes de error y validación */
+.error-message {
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.error-message::before {
+    content: "⚠";
+    font-size: 1rem;
+}
+
+/* Cards para cursos */
+.course-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin: 15px 0;
+    transition: var(--transition);
+    border-left: 4px solid var(--primary-color);
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.course-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 10px;
+}
+
+.course-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.course-stat {
+    text-align: center;
+    padding: 10px;
+    background: var(--light-color);
+    border-radius: var(--border-radius);
+}
+
+.course-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.course-stat-label {
+    font-size: 0.8rem;
+    color: var(--gray-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Navegación adicional */
+.nav-links {
+    background: var(--light-color);
+    padding: 15px 30px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    padding: 8px 16px;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+}
+
+.nav-links a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .content {
+        padding: 20px;
+    }
+    
+    .form-container {
+        padding: 25px 20px;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    .table-actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .course-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-links {
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1, .header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .table-actions .btn {
+        width: 100%;
+    }
+}
+
+/* Animaciones adicionales */
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.slide-in {
+    animation: slideIn 0.6s ease-out;
+}
+
+/* Efectos de carga */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--white);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Tooltips */
+.tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--dark-color);
+    color: var(--white);
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+    z-index: 1000;
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+}

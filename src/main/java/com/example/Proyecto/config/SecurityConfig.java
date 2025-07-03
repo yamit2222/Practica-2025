@@ -25,13 +25,18 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/registro"),
                                 new AntPathRequestMatcher("/login")).permitAll()
                 .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
+            )            .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/cursos", true)
+                .failureUrl("/login?error")
                 .permitAll()
-            )
-            .logout(logout -> logout.permitAll());
+            )            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll());
 
         return http.build();
     }
