@@ -1,47 +1,42 @@
 package com.example.Proyecto.controller;
 
 import com.example.Proyecto.entity.Curso;
-import com.example.Proyecto.entity.Inscripcion;
 import com.example.Proyecto.entity.Usuario;
-import com.example.Proyecto.repository.CursoRepository;
-import com.example.Proyecto.repository.InscripcionRepository;
-import com.example.Proyecto.repository.UsuarioRepository;
-
+import com.example.Proyecto.service.CursoService;
+import com.example.Proyecto.service.InscripcionService;
+import com.example.Proyecto.service.UsuarioService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import org.springframework.validation.BindingResult;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/cursos")
 public class CursoController {
 
-    private final CursoRepository cursoRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final InscripcionRepository inscripcionRepository;
+    private final CursoService cursoService;
+    private final UsuarioService usuarioService;
+    private final InscripcionService inscripcionService;
 
-    public CursoController(CursoRepository cursoRepository, UsuarioRepository usuarioRepository, InscripcionRepository inscripcionRepository) {
-        this.cursoRepository = cursoRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.inscripcionRepository = inscripcionRepository;
+    public CursoController(CursoService cursoService, UsuarioService usuarioService, InscripcionService inscripcionService) {
+        this.cursoService = cursoService;
+        this.usuarioService = usuarioService;
+        this.inscripcionService = inscripcionService;
     }
 
     @GetMapping
     public String listarCursos(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        List<Curso> cursos = cursoRepository.findAll();
-        Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername()).orElseThrow();
-
-        model.addAttribute("cursos", cursos);
+        // Obtener datos a través de los servicios
+        Usuario usuario = usuarioService.obtenerPorUsername(userDetails.getUsername());
+        
+        model.addAttribute("cursos", cursoService.listarTodosLosCursos());
         model.addAttribute("usuario", usuario);
-        model.addAttribute("inscripciones", inscripcionRepository.findByUsuario(usuario));
+        model.addAttribute("inscripciones", inscripcionService.listarInscripcionesPorUsuario(usuario));
+        
         return "cursos";
     }
 
@@ -56,54 +51,27 @@ public class CursoController {
         if (result.hasErrors()) {
             return "curso_form";
         }
-        cursoRepository.save(curso);
+        
+        // La lógica de guardado está en el servicio
+        cursoService.crearCurso(curso);
         return "redirect:/cursos";
     }
 
     @GetMapping("/{id}")
     public String detalleCurso(@PathVariable Long id, Model model) {
-        Optional<Curso> cursoOpt = cursoRepository.findById(id);
-        if (cursoOpt.isEmpty()) {
-            return "redirect:/cursos";
-        }
-        Curso curso = cursoOpt.get();
-        model.addAttribute("curso", curso);
-        model.addAttribute("inscripciones", inscripcionRepository.findByCurso(curso));
-        return "curso_detalle";
-    }
-
-    @PostMapping("/{id}/inscribir")
-    public String inscribirUsuario(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
-        Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername()).orElseThrow();
-        Curso curso = cursoRepository.findById(id).orElseThrow();
-
-        // Verifica si ya está inscrito o capacidad completa
-        long inscritos = inscripcionRepository.findByCurso(curso).size();
-        boolean yaInscrito = inscripcionRepository.findByUsuarioAndCurso(usuario, curso).isPresent();
-
-        if (!yaInscrito && inscritos < curso.getCapacidad()) {
-            Inscripcion inscripcion = new Inscripcion();
-            inscripcion.setUsuario(usuario);
-            inscripcion.setCurso(curso);
-            inscripcion.setFechaInscripcion(LocalDateTime.now());
-            inscripcionRepository.save(inscripcion);
-        }
-        return "redirect:/cursos";
-    }
-
-    @PostMapping("/{id}/remover")
-    public String removerInscripcion(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
-        Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername()).orElseThrow();
-        Curso curso = cursoRepository.findById(id).orElseThrow();
-
-        inscripcionRepository.deleteByUsuarioAndCurso(usuario, curso);
-
-        return "redirect:/cursos";
+        // Buscar curso a través del servicio
+        return cursoService.buscarPorId(id)
+            .map(curso -> {
+                model.addAttribute("curso", curso);
+                model.addAttribute("inscripciones", inscripcionService.listarInscripcionesPorCurso(curso));
+                return "curso_detalle";
+            })
+            .orElse("redirect:/cursos");
     }
 
     @GetMapping("/{id}/editar")
     public String editarCursoForm(@PathVariable Long id, Model model) {
-        Curso curso = cursoRepository.findById(id).orElseThrow();
+        Curso curso = cursoService.obtenerPorId(id);
         model.addAttribute("curso", curso);
         return "curso_form";
     }
@@ -113,14 +81,49 @@ public class CursoController {
         if (result.hasErrors()) {
             return "curso_form";
         }
+        
         curso.setId(id);
-        cursoRepository.save(curso);
+        cursoService.actualizarCurso(curso);
+        return "redirect:/cursos";
+    }
+
+    @PostMapping("/{id}/inscribir")
+    public String inscribirUsuario(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            // Obtener entidades a través de los servicios
+            Usuario usuario = usuarioService.obtenerPorUsername(userDetails.getUsername());
+            Curso curso = cursoService.obtenerPorId(id);
+            
+            // La lógica de inscripción (validaciones incluidas) está en el servicio
+            inscripcionService.inscribirUsuario(usuario, curso);
+        } catch (RuntimeException e) {
+            // Manejo de errores (podría añadirse un flash attribute con el mensaje)
+            // Por ahora, simplemente redirige
+        }
+        
+        return "redirect:/cursos";
+    }
+
+    @PostMapping("/{id}/remover")
+    public String removerInscripcion(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            // Obtener entidades a través de los servicios
+            Usuario usuario = usuarioService.obtenerPorUsername(userDetails.getUsername());
+            Curso curso = cursoService.obtenerPorId(id);
+            
+            // La lógica de remoción está en el servicio
+            inscripcionService.removerInscripcion(usuario, curso);
+        } catch (RuntimeException e) {
+            // Manejo de errores
+        }
+        
         return "redirect:/cursos";
     }
 
     @PostMapping("/{id}/eliminar")
     public String eliminarCurso(@PathVariable Long id) {
-        cursoRepository.deleteById(id);
+        cursoService.eliminarCurso(id);
         return "redirect:/cursos";
     }
 }
+
